@@ -29,17 +29,22 @@ public class AssistantPromotion extends javax.swing.JFrame {
         String[] studentList = null;
         String[] assistantList = null;
         
-        String sql = "Select COUNT(Username) as totalCount, Username From `HD_Accounts` where 'Permissions' = 0";
-        ResultSet rs = db.getResults(conn, sql);
+        String sql = "Select COUNT(Username) as totalCount From `HD_Accounts` where Permission = 0";
+        ResultSet resultCount = db.getResults(conn, sql);
         try {
-            if(rs.next())
+            if(resultCount.next())
             {
-                studentList = new String[rs.getInt("totalCount")];
+                int count = resultCount.getInt("totalCount");
+                studentList = new String[count];
                 try {
                     int i=0;
+
+                    sql = "Select Username From `HD_Accounts` where Permission = 0";
+                    ResultSet rs = db.getResults(conn, sql);
                     while(rs.next())
                     {
                         studentList[i] = rs.getString("Username");
+                        i++;
                     }
                 } catch (SQLException ex) {
                     Logger.getLogger(AssistantPromotion.class.getName()).log(Level.SEVERE, null, ex);
@@ -50,19 +55,33 @@ public class AssistantPromotion extends javax.swing.JFrame {
         }
         
         
-        sql = "Select * From `HD_Accounts` where 'Permissions' = 1";
-        rs = db.getResults(conn, sql);
-
-        
+        sql = "Select COUNT(Username) as totalCount From `HD_Accounts` where Permission = 1";
+        resultCount = db.getResults(conn, sql);
         try {
-            int i=0;
-            while(rs.next())
+            if(resultCount.next())
             {
-                assistantList[i] = rs.getString("Username");
+                int count = resultCount.getInt("totalCount");
+                assistantList = new String[count];
+                try {
+                    int i=0;
+                    
+                    sql = "Select Username From `HD_Accounts` where Permission = 1";
+                    ResultSet rs = db.getResults(conn, sql);
+                    
+                    while(rs.next())
+                    {
+                        assistantList[i] = rs.getString("Username");
+                        i++;
+                    }
+                } catch (SQLException ex) {
+                    Logger.getLogger(AssistantPromotion.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         } catch (SQLException ex) {
             Logger.getLogger(AssistantPromotion.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        
         allStudentList.setListData(studentList);
         allAssistantsList.setListData(assistantList);
         
@@ -104,8 +123,18 @@ public class AssistantPromotion extends javax.swing.JFrame {
         });
 
         demoteStudentButton.setText("Demote");
+        demoteStudentButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                demoteStudentButtonActionPerformed(evt);
+            }
+        });
 
         exitAssistantPromotionButton.setText("Exit");
+        exitAssistantPromotionButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exitAssistantPromotionButtonActionPerformed(evt);
+            }
+        });
 
         allAssistantsList.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
@@ -134,9 +163,10 @@ public class AssistantPromotion extends javax.swing.JFrame {
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
                             .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 82, Short.MAX_VALUE)
                             .addGroup(layout.createSequentialGroup()
-                                .addGap(21, 21, 21)
-                                .addComponent(jLabel2))
-                            .addComponent(demoteStudentButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                                    .addComponent(jLabel2)
+                                    .addComponent(demoteStudentButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                     .addGroup(layout.createSequentialGroup()
                         .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(exitAssistantPromotionButton, javax.swing.GroupLayout.PREFERRED_SIZE, 73, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -174,10 +204,29 @@ public class AssistantPromotion extends javax.swing.JFrame {
         String sql = "UPDATE  `lepolted`.`HD_Accounts` SET  `Permission` =  '1' WHERE  `HD_Accounts`.`Username` = '"+ allStudentList.getSelectedValue() +"'";
         db.updateDatabase(conn, sql);
         
-        allStudentList.clearSelection();
+        new AssistantPromotion().setVisible(true);
+        this.dispose();
         
         
     }//GEN-LAST:event_promoteStudentButtonActionPerformed
+
+    private void demoteStudentButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_demoteStudentButtonActionPerformed
+        // TODO add your handling code here:
+        DatabaseConnection db = new DatabaseConnection();
+        Connection conn = db.connectToDB();
+        
+        String sql = "UPDATE  `lepolted`.`HD_Accounts` SET  `Permission` =  '0' WHERE  `HD_Accounts`.`Username` = '"+ allAssistantsList.getSelectedValue() +"'";
+        db.updateDatabase(conn, sql);
+        
+        new AssistantPromotion().setVisible(true);
+        this.dispose();
+        
+    }//GEN-LAST:event_demoteStudentButtonActionPerformed
+
+    private void exitAssistantPromotionButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitAssistantPromotionButtonActionPerformed
+        // TODO add your handling code here:
+        this.dispose();
+    }//GEN-LAST:event_exitAssistantPromotionButtonActionPerformed
 
     /**
      * @param args the command line arguments

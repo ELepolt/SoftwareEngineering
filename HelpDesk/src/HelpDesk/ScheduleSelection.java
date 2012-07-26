@@ -19,11 +19,16 @@ import java.sql.SQLException;
  * @author scheetaa
  */
 public class ScheduleSelection extends javax.swing.JFrame {
-
+    private int userID;
     /**
      * Creates new form ScheduleSelection
      */
     public ScheduleSelection() {
+        this.userID = 2;
+        initComponents();
+    }
+    public ScheduleSelection(int userID) {
+        this.userID = 2;//userID;
         initComponents();
     }
 
@@ -166,7 +171,8 @@ public class ScheduleSelection extends javax.swing.JFrame {
         String[] endTimes = new String[7];
         String startDate;
         String endDate;
-        int assistantID = 1;
+        boolean assistantExists = false;
+        int sqlID = 0;
         
         for(int j = 0; j < 2; j++)
         {
@@ -206,28 +212,65 @@ public class ScheduleSelection extends javax.swing.JFrame {
         
         startDate = scheduleSelectStartDate.getText();
         endDate = scheduleSelectEndDate.getText();
-        String preSQL = "INSERT INTO  `lepolted`.`TASchedule` ("
-                        + "`StartDate` ,"
-                        + "`EndDate` ,"
-                        + "`DayOfWeek` ,"
-                        + "`StartTime` ,"
-                        + "`EndTime` ,"
-                        + "`AssistantID`)"
-                        + "VALUES ("
-                        + "'"+startDate+"',"
-                        + "'"+endDate+"',";
+        String checkSQL = "Select * FROM TASchedule where AssistantID = "
+                + "'"+userID+"' order by ID asc";
+        ResultSet rs = dbConnect.getResults(conn, checkSQL);
+        String preSQL = "";
+        try {
+            if(rs.next())
+            {
+                sqlID = rs.getInt("ID");
+                preSQL = "UPDATE  `lepolted`.`TASchedule` SET ";
+                //preSQL = "Update"
+                assistantExists = true;      
+            }
+            else
+            {
+                preSQL = "INSERT INTO  `lepolted`.`TASchedule` ("
+                            + "`StartDate` ,"
+                            + "`EndDate` ,"
+                            + "`DayOfWeek` ,"
+                            + "`StartTime` ,"
+                            + "`EndTime` ,"
+                            + "`AssistantID`)"
+                            + "VALUES ("
+                            + "'"+startDate+"',"
+                            + "'"+endDate+"',";
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ScheduleSelection.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         String postSQL = "";
         String sql = "";
-        for(int i=0; i<=6; i++)
+        if (assistantExists)
         {
-            postSQL = "'" + daysOfWeek[i]+"', ";
-            postSQL += "'" + startTimes[i] + "', ";
-            postSQL += "'" + endTimes[i] + "', ";
-            postSQL += "'" + assistantID + "'";
-            sql = preSQL + postSQL + ")";
-            dbConnect.updateDatabase(conn, sql);
+            for(int i=0; i<=6; i++)
+            {
+                postSQL = "";
+                sql = "";
+                postSQL += "`StartTime` = '" + startTimes[i] + "', ";
+                postSQL += "`EndTime` = '" + endTimes[i] + "' ";
+                postSQL += "where `TASchedule`.`ID` = "+ sqlID;
+                sql = preSQL + postSQL;
+                dbConnect.updateDatabase(conn, sql);
+                sqlID++;
+            }
+            
         }
+        else
+        {
+            for(int i=0; i<=6; i++)
+            {
+                postSQL = "'" + daysOfWeek[i]+"', ";
+                postSQL += "'" + startTimes[i] + "', ";
+                postSQL += "'" + endTimes[i] + "', ";
+                postSQL += "'" + userID + "'";
+                sql = preSQL + postSQL + ")";
+                dbConnect.updateDatabase(conn, sql);
+            }
+        }
+        
     }//GEN-LAST:event_submitScheduleActionPerformed
 
     private void clearTimesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearTimesActionPerformed

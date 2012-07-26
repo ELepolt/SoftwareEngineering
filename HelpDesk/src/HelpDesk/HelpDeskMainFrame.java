@@ -396,6 +396,7 @@ private void loginSubmitButtonActionPerformed(java.awt.event.ActionEvent evt) {/
         String password = "password";//passwordText.getText();
         Boolean accountAvailable = false;
         int accountID = 0;
+        int permission = 0;
         String accountPassword = "";
         String firstName = "";
         String lastName = "";
@@ -422,6 +423,7 @@ private void loginSubmitButtonActionPerformed(java.awt.event.ActionEvent evt) {/
                         accountPassword = rs.getString("Password");
                         firstName = rs.getString("FirstName");
                         lastName = rs.getString("LastName");
+                        permission = rs.getInt("Permission") + 1;
                     }
 
                 }
@@ -452,7 +454,7 @@ private void loginSubmitButtonActionPerformed(java.awt.event.ActionEvent evt) {/
         else
         {
             loginForm.setVisible(false);
-            new LandingForm().setVisible(true);
+            new LandingForm(permission, accountID).setVisible(true);
         }
 }//GEN-LAST:event_loginSubmitButtonActionPerformed
 

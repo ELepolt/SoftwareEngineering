@@ -19,16 +19,24 @@ import javax.swing.tree.TreeSelectionModel;
 
 /**
  *
- * @author Kevin
+ * @author Kevin and Evan
  */
 public class LandingForm extends javax.swing.JFrame implements TreeSelectionListener {
     private URL helpURL;
     private static boolean DEBUG = false;
-    
+    static private int userType; //1 for student, 2 for gradassistant, 3 for gradcoordinator
+    static private int userID; //ID used for passing visibility option in questions/comments
     /**
      * Creates new form LandingForm
      */
     public LandingForm() {
+        this.userType = 2;//userType;
+        initComponents();
+    }
+    
+    public LandingForm(int userType, int userID) {
+        this.userType = 2;//userType;
+        this.userID = 2;//userID;
         initComponents();
     }
 
@@ -54,6 +62,11 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
         ReplyButton = new javax.swing.JButton();
         htmlView = new javax.swing.JScrollPane();
         htmlPane = new javax.swing.JEditorPane();
+        viewScheduleButton = new javax.swing.JButton();
+        setAssistantsButton = new javax.swing.JButton();
+        controlFormsButton = new javax.swing.JButton();
+        accessScheduleButton = new javax.swing.JButton();
+        accessFormsButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -91,50 +104,117 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
         htmlPane.setCursor(new java.awt.Cursor(java.awt.Cursor.TEXT_CURSOR));
         htmlView.setViewportView(htmlPane);
 
+        if (userType == 3) {
+
+        } else {
+            viewScheduleButton.setVisible(false);
+        }
+        viewScheduleButton.setText("Schedule Control");
+
+        if (userType == 3) {
+
+        } else {
+            setAssistantsButton.setVisible(false);
+        }
+        setAssistantsButton.setText("Set Assistants");
+        setAssistantsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                setAssistantsButtonActionPerformed(evt);
+            }
+        });
+
+        if (userType == 2) {
+
+        } else {
+            controlFormsButton.setVisible(false);
+        }
+        controlFormsButton.setText("Forms");
+
+        if (userType == 2) {
+
+        } else {
+            accessScheduleButton.setVisible(false);
+        }
+        accessScheduleButton.setText("My Schedule");
+        accessScheduleButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                accessScheduleButtonActionPerformed(evt);
+            }
+        });
+
+        if (userType == 1) {
+
+        } else {
+            accessFormsButton.setVisible(false);
+        }
+        accessFormsButton.setText("My Forms");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 519, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(ReplyButton))
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addGroup(layout.createSequentialGroup()
-                            .addComponent(jLabel2)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(ThreadIDTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                            .addComponent(SearchButton))
-                        .addComponent(jScrollPane)
-                        .addComponent(htmlView, javax.swing.GroupLayout.DEFAULT_SIZE, 705, Short.MAX_VALUE)))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(ExitButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel2)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(ThreadIDTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(SearchButton)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(htmlView)
+                    .addComponent(jScrollPane))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(ExitButton)
+                        .addGap(42, 42, 42))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(accessFormsButton)
+                        .addComponent(accessScheduleButton)
+                        .addComponent(controlFormsButton)
+                        .addComponent(setAssistantsButton)
+                        .addComponent(viewScheduleButton)))
+                .addGap(22, 22, 22))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(ExitButton)
-                    .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(htmlView, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addGap(18, 18, 18)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(ThreadIDTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(SearchButton)))
-                    .addComponent(ReplyButton))
-                .addGap(49, 49, 49))
+                        .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(htmlView, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addGap(18, 18, 18)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                    .addComponent(jLabel2)
+                                    .addComponent(ThreadIDTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                    .addComponent(SearchButton)))
+                            .addComponent(ReplyButton))
+                        .addGap(49, 49, 49))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(ExitButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(accessFormsButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(accessScheduleButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(controlFormsButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(setAssistantsButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(viewScheduleButton)
+                        .addContainerGap())))
         );
 
         pack();
@@ -223,26 +303,41 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
         // Query for total Forum topics
         String sql = "SELECT * FROM `ForumCategories`"; // WHERE Username = '"+userName+"'"; 
         ResultSet rs = dbConnect.getResults(conn, sql);
-        int parentID = 0;
+        int categoryID = 0;
+        int subCategoryID = 0;
         try {
             while (rs.next())
             {
                 category2 = new DefaultMutableTreeNode(rs.getString("Name"));
                 category.add(category2);
                 
-                parentID = rs.getInt("ForumCategoryID");
-                String subSQL = "SELECT * FROM `ForumSubCategories` WHERE ParentID = '"+parentID+"'"; 
+                categoryID = rs.getInt("CategoryID");
+                String subSQL = "SELECT * FROM `ForumSubCategories` WHERE CategoryID = '"+categoryID+"'"; 
                 ResultSet subRS = dbConnect.getResults(conn, subSQL);
                 while (subRS.next())
                 {
                     category3 = new DefaultMutableTreeNode(subRS.getString("Name"));
                     category2.add(category3);
+                    
+                    subCategoryID = subRS.getInt("SubCategoryID");
+                    String questionSQL = "SELECT * FROM `ForumQuestions` WHERE SubCategoryID = '"+subCategoryID+"'"; 
+                    ResultSet questionRS = dbConnect.getResults(conn, questionSQL);
+                    
+                    while(questionRS.next())
+                    {
+                        String questionTitle = questionRS.getString("QuestionTitle");
+                        String questionContent = questionRS.getString("Question");
+                        int questionID = questionRS.getInt("QuestionID");
+                        
+                        DefaultMutableTreeNode newNode = new DefaultMutableTreeNode();
+                        getComments(newNode, questionID);
+                    }
+                
                 }
             }
         } catch (SQLException ex) {
             Logger.getLogger(HelpDeskMainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
 
         
         /*category2 = new DefaultMutableTreeNode("Announcements");
@@ -332,6 +427,21 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
         
     }//GEN-LAST:event_ReplyButtonActionPerformed
 
+    private void setAssistantsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_setAssistantsButtonActionPerformed
+        new AssistantPromotion().setVisible(true);
+    }//GEN-LAST:event_setAssistantsButtonActionPerformed
+
+    private void accessScheduleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accessScheduleButtonActionPerformed
+        // TODO add your handling code here:
+        
+        ScheduleSelection scheduleSelection1 = new ScheduleSelection(userID);
+        scheduleSelection1.setVisible(true);
+    }//GEN-LAST:event_accessScheduleButtonActionPerformed
+    
+    private void getComments(DefaultMutableTreeNode parentCat, int parentCatID)
+    {
+        
+    }
     /**
      * @param args the command line arguments
      */
@@ -378,11 +488,16 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
     private javax.swing.JButton ReplyButton;
     private javax.swing.JToggleButton SearchButton;
     private javax.swing.JTextField ThreadIDTextField;
+    private javax.swing.JButton accessFormsButton;
+    private javax.swing.JButton accessScheduleButton;
+    private javax.swing.JButton controlFormsButton;
     private javax.swing.JEditorPane htmlPane;
     private javax.swing.JScrollPane htmlView;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane;
+    private javax.swing.JButton setAssistantsButton;
     private javax.swing.JTree tree;
+    private javax.swing.JButton viewScheduleButton;
     // End of variables declaration//GEN-END:variables
 }
