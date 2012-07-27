@@ -4,6 +4,8 @@
  */
 package HelpDesk;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
@@ -12,9 +14,12 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 
 /**
@@ -22,7 +27,7 @@ import javax.swing.tree.TreeSelectionModel;
  * @author Kevin and Evan
  */
 public class LandingForm extends javax.swing.JFrame implements TreeSelectionListener {
-    private URL helpURL;
+    private String bookData;
     private static boolean DEBUG = false;
     static private int userType; //1 for student, 2 for gradassistant, 3 for gradcoordinator
     static private int userID; //ID used for passing visibility option in questions/comments
@@ -229,12 +234,12 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
         Object nodeInfo = node.getUserObject();
         if (node.isLeaf()) {
             BookInfo book = (BookInfo)nodeInfo;
-            displayURL(book.bookURL);
+            displayData(book.bookData);
             if (DEBUG) {
-                System.out.print(book.bookURL + ":  \n    ");
+                System.out.print(book.bookData + ":  \n    ");
             }
         } else {
-            displayURL(helpURL); 
+            displayData(bookData); 
         }
         if (DEBUG) {
             System.out.println(nodeInfo.toString());
@@ -243,15 +248,15 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
     
     private class BookInfo {
         public String bookName;
-        public URL bookURL;
-        
-        public BookInfo(String book, String filename) {
+        public String bookData;
+        public int bookID;
+        public int bookType;
+
+        public BookInfo(String book, String data, int ID, int type) {
             bookName = book;
-            bookURL = getClass().getResource(filename);
-            if (bookURL == null) {
-                System.err.println("Couldn't find file: "
-                                   + filename);
-            }
+            bookData = data;
+            bookID = ID;
+            bookType = type;
         }
 
         public String toString() {
@@ -261,14 +266,20 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
     
     private void initHelp() {
         String s = "Welcome.txt";
-        helpURL = getClass().getResource(s);
-        if (helpURL == null) {
+        
+        try {
+            bookData = readFile(s);
+        } catch (IOException ex) {
+            Logger.getLogger(LandingForm.class.getName()).log(Level.SEVERE, null, ex);
+        } 
+        
+        if (bookData == null) {
             System.err.println("Couldn't open help file: " + s);
         } else if (DEBUG) {
-            System.out.println("Help URL is " + helpURL);
+            System.out.println("Help URL is " + "Status404: not available.");
+        } else {
+            displayData(bookData);
         }
-
-        displayURL(helpURL);
     }
     
     private void displayURL(URL url) {
@@ -286,42 +297,70 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
         }
     }
     
-    private void createNodes(DefaultMutableTreeNode top) {
-        DefaultMutableTreeNode category = null;
-        DefaultMutableTreeNode category2 = null;
-        DefaultMutableTreeNode category3 = null;
-        DefaultMutableTreeNode file = null;
+    private void displayData(String data) {
+        
+            if (data != null) {
+                htmlPane.setText(data);
+            } else { //null url
+		htmlPane.setText("Info Not Found");
+                if (DEBUG) {
+                    System.out.println("Attempted to display a null URL.");
+                }
+            }
+        
+    }
+    
+    private String readFile( String file ) throws IOException {
+        BufferedReader reader = new BufferedReader( new FileReader (file));
+        String         line = null;
+        StringBuilder  stringBuilder = new StringBuilder();
+        String         ls = System.getProperty("line.separator");
 
-        String test[] = {"General Forums", "Announcements"};
+        while( ( line = reader.readLine() ) != null ) {
+            stringBuilder.append( line );
+            stringBuilder.append( ls );
+    }
+
+        return stringBuilder.toString();
+    }
+    
+    private void createNodes(DefaultMutableTreeNode top) {
+        DefaultMutableTreeNode generalForums = null;
+        DefaultMutableTreeNode category = null;
+        DefaultMutableTreeNode subCategory = null;
+        DefaultMutableTreeNode question = null;
+
+        generalForums = new DefaultMutableTreeNode("General Forums");
+        top.add(generalForums);
         
-        category = new DefaultMutableTreeNode("General Forums");
-        top.add(category);
-        
-        DatabaseConnection dbConnect = new DatabaseConnection();
-        Connection conn = dbConnect.connectToDB();
+        DatabaseConnection db = new DatabaseConnection();
+        Connection conn = db.connectToDB();
         
         // Query for total Forum topics
-        String sql = "SELECT * FROM `ForumCategories`"; // WHERE Username = '"+userName+"'"; 
-        ResultSet rs = dbConnect.getResults(conn, sql);
+        // Gets all topics in the forums.
+        String sql = "SELECT * FROM `ForumCategories`";
+        ResultSet rs = db.getResults(conn, sql);
         int categoryID = 0;
         int subCategoryID = 0;
         try {
             while (rs.next())
             {
-                category2 = new DefaultMutableTreeNode(rs.getString("Name"));
-                category.add(category2);
+                category = new DefaultMutableTreeNode(rs.getString("Name"));
+                generalForums.add(category); //Adds Category to General Forums
                 
+                //Queries for all the subCategories inside the main generalForums
+                //IE: Math is a category of the Category "Queries"
                 categoryID = rs.getInt("CategoryID");
                 String subSQL = "SELECT * FROM `ForumSubCategories` WHERE CategoryID = '"+categoryID+"'"; 
-                ResultSet subRS = dbConnect.getResults(conn, subSQL);
+                ResultSet subRS = db.getResults(conn, subSQL);
                 while (subRS.next())
                 {
-                    category3 = new DefaultMutableTreeNode(subRS.getString("Name"));
-                    category2.add(category3);
+                    subCategory = new DefaultMutableTreeNode(subRS.getString("Name"));
+                    category.add(subCategory); //Adds subCategory "math" to Category "queries"
                     
                     subCategoryID = subRS.getInt("SubCategoryID");
                     String questionSQL = "SELECT * FROM `ForumQuestions` WHERE SubCategoryID = '"+subCategoryID+"'"; 
-                    ResultSet questionRS = dbConnect.getResults(conn, questionSQL);
+                    ResultSet questionRS = db.getResults(conn, questionSQL);
                     
                     while(questionRS.next())
                     {
@@ -329,8 +368,10 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
                         String questionContent = questionRS.getString("Question");
                         int questionID = questionRS.getInt("QuestionID");
                         
-                        DefaultMutableTreeNode newNode = new DefaultMutableTreeNode();
-                        getComments(newNode, questionID);
+                        question = new DefaultMutableTreeNode(new BookInfo(questionTitle, questionContent, questionID, 0));
+                        subCategory.add(question); //Adds question Pythah to subCategory Math
+                        
+                        //getAnswers(db, conn, question, questionID); //Gets answers for question
                     }
                 
                 }
@@ -338,71 +379,16 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
         } catch (SQLException ex) {
             Logger.getLogger(HelpDeskMainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        DefaultMutableTreeNode file = new DefaultMutableTreeNode(new BookInfo
+                                        ("This is a test",
+                                        "JacobianMatrix.txt",
+                                        0,0));
+        subCategory.add(file);
         
-        /*category2 = new DefaultMutableTreeNode("Announcements");
-        category.add(category2);    
-
-        /*file = new DefaultMutableTreeNode(new BookInfo
-                                        ("Announcements - ReadMe",
-                                        "AnnouncementsInfo.txt"));
-        category2.add(file);*/
-
-        file = new DefaultMutableTreeNode(new BookInfo
-                                        ("Try not to use Too Many Characters!",
-                                        "MessageFromWorldsMostAnnoyingForumMod.txt"));
-        category2.add(file);
-
-        /*category2 = new DefaultMutableTreeNode("Queries");
-        category.add(category2);
-
-        /*file = new DefaultMutableTreeNode(new BookInfo
-                                        ("Queries - ReadMe",
-                                        "QueriesInfo.txt"));
-        category.add(file);*/
-
-        /*category3 = new DefaultMutableTreeNode("Math");
-        category2.add(category3);
-
-        /*file = new DefaultMutableTreeNode(new BookInfo
-                                        ("Pythagorean Theorem",
-                                        "PythagoreanTheorem.txt"));
-        category3.add(file);*/
-
-        /*file = new DefaultMutableTreeNode(new BookInfo
-                                        ("Jacobian Matrix?",
-                                        "JacobianMatrix.txt"));
-        category3.add(file);*/
-
-       /* category3 = new DefaultMutableTreeNode("Science");
-        category2.add(category3);
-
-        /*file = new DefaultMutableTreeNode(new BookInfo
-                                        ("Newton's Laws of Motion?",
-                                        "NewtonLawofMotion.txt"));
-        category3.add(file);*/
-
-        /*file = new DefaultMutableTreeNode(new BookInfo
-                                        ("Peroxide Formation - Ethers?",
-                                        "PeroxideFormation.txt"));
-        category3.add(file);*/
-
-        /*category3 = new DefaultMutableTreeNode("English");
-        category2.add(category3);
-
-        /*file = new DefaultMutableTreeNode(new BookInfo
-                                        ("What's the Meaning of Life?",
-                                        "MeaningofLife.txt"));
-        category3.add(file);*/
-
-        /*category3 = new DefaultMutableTreeNode("History");
-        category2.add(category3);
-
-        /*file = new DefaultMutableTreeNode(new BookInfo
-                                        ("Treaty of Paris (1783) Repercussions",
-                                        "TreatyofParis.txt"));
-        category3.add(file);*/
-
+        DefaultMutableTreeNode test = new DefaultMutableTreeNode(new BookInfo
+                                        ("This is another test",
+                                        "JacobianMatrix.txt",0,0));
+        file.add(test);
     }
     
     
@@ -419,11 +405,29 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
     }//GEN-LAST:event_SearchButtonActionPerformed
 
     private void ReplyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ReplyButtonActionPerformed
-        // TODO add your handling code here:
+        String subCat = null;
+        int commentID = 0;
+        
+        TreePath path = tree.getSelectionPath();
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+        BookInfo bookInfo = (BookInfo) node.getUserObject();
+        
+        int bookType = bookInfo.bookType;
+        
+        if(bookType == 0)
+        {
+            TreePath parent = path.getParentPath();
+            node = (DefaultMutableTreeNode) parent.getLastPathComponent();
+            subCat = (String) node.getUserObject();
+        }
+        else
+        {
+            commentID = bookInfo.bookID;
+        }
         
         
-        ReplyForm replyForm1 = new ReplyForm();
-        replyForm1.setVisible(true);
+        ReplyForm replyForm = new ReplyForm(bookType, userID, subCat, commentID);
+        replyForm.setVisible(true);
         
     }//GEN-LAST:event_ReplyButtonActionPerformed
 
@@ -438,10 +442,67 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
         scheduleSelection1.setVisible(true);
     }//GEN-LAST:event_accessScheduleButtonActionPerformed
     
-    private void getComments(DefaultMutableTreeNode parentCat, int parentCatID)
+    private void getAnswers(DatabaseConnection db, 
+                            Connection conn, 
+                            DefaultMutableTreeNode parentQuestion,
+                            int questionID)
     {
-        
+        //Queries the comments for matching questionID
+        String sql = "SELECT * FROM `ForumComments` WHERE QuestionID = '"+questionID+"'"; 
+        ResultSet rs = db.getResults(conn, sql);
+        try {
+            while (rs.next())
+            {
+                //rs.getString("Author") is the user's ID. Need to probably get the user name or something.
+                //Also, need to add in visibility.
+                int commentID = rs.getInt("CommentID");
+                DefaultMutableTreeNode answer = new DefaultMutableTreeNode(new BookInfo
+                                                                        (rs.getString("Author"), 
+                                                                         rs.getString("Comment"),
+                                                                         commentID,
+                                                                         1));
+                parentQuestion.add(answer); //Adds Answer to Question
+                        
+                //Queries to see if there are comments to the answer
+                String answerSQL = "Select * from `ForumComments` where ReplyID = '"+commentID+"'";
+                ResultSet answerRS = db.getResults(conn, answerSQL);
+                while (answerRS.next());
+                {
+                    getComments(db, conn, answer, commentID);
+                }
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(LandingForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
+    private void getComments(DatabaseConnection db, 
+                             Connection conn, 
+                             DefaultMutableTreeNode parentComment,
+                             int parentCommentID)
+    {
+        //Queries for matching ReplyID
+        String sql = "SELECT * FROM `ForumComments` WHERE ReplyID = '"+parentCommentID+"'"; 
+        ResultSet rs = db.getResults(conn, sql);
+        try {
+            while (rs.next())
+            {
+                int commentID = rs.getInt("CommentID");
+                //rs.getString("Author") is the user's ID.
+                DefaultMutableTreeNode childComment = new DefaultMutableTreeNode(new BookInfo
+                                                                        (rs.getString("Author"), 
+                                                                         rs.getString("Comment"),
+                                                                         commentID,
+                                                                         1));
+                parentComment.add(childComment); //Adds question to category
+                        
+                //Gets comments by recursion... hopefully. Damn straight it does.
+                getComments(db, conn, childComment, commentID);
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(LandingForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+            
     /**
      * @param args the command line arguments
      */

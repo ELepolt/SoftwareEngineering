@@ -4,6 +4,7 @@
  */
 package HelpDesk;
 
+import java.sql.Connection;
 import java.util.Random;
 import javax.swing.JOptionPane;
 
@@ -12,12 +13,26 @@ import javax.swing.JOptionPane;
  * @author Kevin
  */
 public class ReplyForm extends javax.swing.JFrame {
-
+    private int bookType;
+    private int userID;
+    private String subCat;
+    private int parentComment;
     /**
      * Creates new form ReplyForm
      */
+    public ReplyForm(int bookType, int userID, String subCat, int parentComment) {
+        this.bookType = bookType;
+        this.userID = userID;
+        this.subCat = subCat;
+        this.parentComment = parentComment;
+        
+        
+        initComponents();
+        
+    }
     public ReplyForm() {
         initComponents();
+        
     }
 
     /**
@@ -104,11 +119,21 @@ public class ReplyForm extends javax.swing.JFrame {
     private void SubmitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SubmitButtonActionPerformed
         // TODO add your handling code here:
         
-        Random generator = new Random();
-        int threadID = generator.nextInt(999);
-        threadID = threadID + 3000;
-        
-        JOptionPane.showMessageDialog(this, "Reply submitted. Your reply ID: " + threadID);
+        if(bookType == 0)
+        {
+            //This is someone submitting a question to a subCategory
+            
+        }
+        else if(bookType == 1)
+        {
+            //This is someone Answering a question
+            
+        }
+        else
+        {
+            //This is someone commenting
+            
+        }
         
         this.setVisible(false);
     }//GEN-LAST:event_SubmitButtonActionPerformed
@@ -153,6 +178,31 @@ public class ReplyForm extends javax.swing.JFrame {
                 new ReplyForm().setVisible(true);
             }
         });
+    }
+    
+    String OriginalComment(int commentID)
+    {
+        String comment ="";
+        DatabaseConnection db = new DatabaseConnection();
+        Connection conn = db.connectToDB();
+        String sql = "Select * from ";
+        if(bookType == 0)
+        {
+            //This is someone submitting a question to a subCategory
+            sql += "";
+        }
+        else if(bookType == 1)
+        {
+            //This is someone Answering a question
+            
+        }
+        else
+        {
+            //This is someone commenting
+            
+        }
+        
+        return comment;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ExitButton;
