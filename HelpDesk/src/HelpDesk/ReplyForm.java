@@ -5,7 +5,11 @@
 package HelpDesk;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -19,18 +23,18 @@ public class ReplyForm extends javax.swing.JFrame {
     private int userID;
     private String subCat;
     private int parentComment;
+    private int userType;
     /**
      * Creates new form ReplyForm
      */
-    public ReplyForm(int bookType, int userID, String subCat, int parentComment) {
+    public ReplyForm(int bookType, int userID, String subCat, int parentComment, int userType) {
         this.bookType = bookType;
         this.userID = userID;
         this.subCat = subCat;
         this.parentComment = parentComment;
-        
-        OriginalComment(parentComment);
+        this.userType = userType;
         initComponents();
-        
+        OriginalComment(parentComment);
     }
     public ReplyForm() {
         initComponents();
@@ -50,12 +54,16 @@ public class ReplyForm extends javax.swing.JFrame {
         ParentCommentTextArea = new javax.swing.JTextArea();
         ExitButton = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea2 = new javax.swing.JTextArea();
+        contentTextArea = new javax.swing.JTextArea();
         SubmitButton = new javax.swing.JButton();
+        VisibleToPublicCheckbox = new javax.swing.JCheckBox();
+        QuestionTitleLabel = new javax.swing.JLabel();
+        QuestionTitleTextField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
         ParentCommentTextArea.setColumns(20);
+        ParentCommentTextArea.setEditable(false);
         ParentCommentTextArea.setRows(5);
         jScrollPane1.setViewportView(ParentCommentTextArea);
 
@@ -66,9 +74,9 @@ public class ReplyForm extends javax.swing.JFrame {
             }
         });
 
-        jTextArea2.setColumns(20);
-        jTextArea2.setRows(5);
-        jScrollPane2.setViewportView(jTextArea2);
+        contentTextArea.setColumns(20);
+        contentTextArea.setRows(5);
+        jScrollPane2.setViewportView(contentTextArea);
 
         SubmitButton.setText("Submit");
         SubmitButton.addActionListener(new java.awt.event.ActionListener() {
@@ -76,6 +84,15 @@ public class ReplyForm extends javax.swing.JFrame {
                 SubmitButtonActionPerformed(evt);
             }
         });
+
+        VisibleToPublicCheckbox.setSelected(true);
+        VisibleToPublicCheckbox.setText("Visible to Public");
+
+        if(bookType != 0)  {      QuestionTitleLabel.setVisible(false);  }
+        QuestionTitleLabel.setText("Question Title");
+
+        if(bookType != 0)  {      QuestionTitleTextField.setVisible(false);  }
+        QuestionTitleTextField.setText("Insert Title Here");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -90,7 +107,15 @@ public class ReplyForm extends javax.swing.JFrame {
                         .addComponent(ExitButton))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(SubmitButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(VisibleToPublicCheckbox)
+                        .addGap(138, 138, 138)
+                        .addComponent(QuestionTitleLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(QuestionTitleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 292, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(71, 71, 71)
                         .addComponent(jScrollPane2)))
                 .addContainerGap())
         );
@@ -103,10 +128,18 @@ public class ReplyForm extends javax.swing.JFrame {
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 234, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 270, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(SubmitButton)
-                        .addGap(0, 0, Short.MAX_VALUE)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(SubmitButton)
+                            .addComponent(VisibleToPublicCheckbox))
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(QuestionTitleLabel)
+                            .addComponent(QuestionTitleTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 243, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
 
@@ -120,24 +153,68 @@ public class ReplyForm extends javax.swing.JFrame {
 
     private void SubmitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SubmitButtonActionPerformed
         // TODO add your handling code here:
+        DatabaseConnection db = new DatabaseConnection();
+        Connection conn = db.connectToDB();
+        String sql = "";
         
         if(bookType == 0)
         {
             //This is someone submitting a question to a subCategory
+            sql = "INSERT INTO  `lepolted`.`ForumQuestions` ("
+                    +"`QuestionTitle` ,"
+                    +"`Question` ,"
+                    +"`QuestionID` ,"
+                    +"`SubCategoryID`"
+                    +")"
+                    +"VALUES ("
+                    +"'"+ QuestionTitleTextField.getText() +"', "
+                    +"'"+ contentTextArea.getText() +"', "
+                    +"NULL ,"
+                    +"'"+ Constants.subCat(subCat) + "'"
+                    +")";
             
         }
         else if(bookType == 1)
         {
             //This is someone Answering a question
-            
+            sql = "INSERT INTO  `lepolted`.`ForumComments` ("
+                    +"`QuestionID` ,"
+                    +"`CommentID` ,"
+                    +"`ReplyID` ,"
+                    +"`Comment` ,"
+                    +"`Author`"
+                    +")"
+                    +"VALUES ("
+                    +"'"+ parentComment +"', "
+                    +"NULL, "
+                    +"NULL ,"
+                    +"'"+ contentTextArea.getText() + "', "
+                    +"'"+ userID + "'"
+                    +")";
         }
         else
         {
             //This is someone commenting
-            
+            sql = "INSERT INTO  `lepolted`.`ForumComments` ("
+                    +"`QuestionID` ,"
+                    +"`CommentID` ,"
+                    +"`ReplyID` ,"
+                    +"`Comment` ,"
+                    +"`Author`"
+                    +")"
+                    +"VALUES ("
+                    +"NULL, "
+                    +"NULL, "
+                    +"'"+ parentComment + "', "
+                    +"'"+ contentTextArea.getText() + "', "
+                    +"'"+ userID + "'"
+                    +")";
         }
         
-        this.setVisible(false);
+        //Update Database and return to main form.
+        db.updateDatabase(conn, sql);
+        this.dispose();
+        new LandingForm(userType,userID).setVisible(true);
     }//GEN-LAST:event_SubmitButtonActionPerformed
 
     /**
@@ -190,25 +267,50 @@ public class ReplyForm extends javax.swing.JFrame {
         String sql = "Select * from ";
         if(bookType == 0)
         {
+            ParentCommentTextArea.setText("Insert question below");
+        }
+        else if(bookType == 1)
+        {
             //This is someone replying to an answer to a question
             sql += "`ForumQuestions` where QuestionID = '"+commentID+"'";
+            ResultSet rs = db.getResults(conn, sql);
+            try {
+                if(rs.next())
+                {
+                    ParentCommentTextArea.setText(rs.getString("Question"));
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(ReplyForm.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         else
         {
             //This is someone commenting
-            sql += "";
+            sql += "`ForumComments` where CommentID = '"+commentID+"'";
+                ResultSet rs = db.getResults(conn, sql);
+            try {
+                if(rs.next())
+                {
+                    ParentCommentTextArea.setText(rs.getString("Comment"));
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(ReplyForm.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         
-        ParentCommentTextArea.setText("Test");
+        
         
         return comment;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ExitButton;
     private javax.swing.JTextArea ParentCommentTextArea;
+    private javax.swing.JLabel QuestionTitleLabel;
+    private javax.swing.JTextField QuestionTitleTextField;
     private javax.swing.JButton SubmitButton;
+    private javax.swing.JCheckBox VisibleToPublicCheckbox;
+    private javax.swing.JTextArea contentTextArea;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea2;
     // End of variables declaration//GEN-END:variables
 }

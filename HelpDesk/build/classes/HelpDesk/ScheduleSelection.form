@@ -69,7 +69,9 @@
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="submitSchedule" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="390" max="32767" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
+                          <Component id="ExitButton" min="-2" pref="69" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="152" max="-2" attributes="0"/>
                           <Component id="clearTimes" min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -95,6 +97,7 @@
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="submitSchedule" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="clearTimes" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="ExitButton" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="-2" pref="7" max="-2" attributes="0"/>
               </Group>
@@ -211,6 +214,9 @@
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="submitScheduleActionPerformed"/>
           </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="if(!editable)&#xd;&#xa;{&#xd;&#xa;    submitSchedule.setVisible(false);&#xd;&#xa;}"/>
+          </AuxValues>
         </Component>
         <Component class="javax.swing.JButton" name="clearTimes">
           <Properties>
@@ -218,6 +224,17 @@
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="clearTimesActionPerformed"/>
+          </Events>
+          <AuxValues>
+            <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="if(!editable)&#xd;&#xa;{&#xd;&#xa;    clearTimes.setVisible(false);&#xd;&#xa;}"/>
+          </AuxValues>
+        </Component>
+        <Component class="javax.swing.JButton" name="ExitButton">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Exit"/>
+          </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="ExitButtonActionPerformed"/>
           </Events>
         </Component>
       </SubComponents>

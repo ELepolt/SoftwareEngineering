@@ -20,16 +20,18 @@ import java.sql.SQLException;
  */
 public class ScheduleSelection extends javax.swing.JFrame {
     private int userID;
+    private boolean editable;
     /**
      * Creates new form ScheduleSelection
      */
     public ScheduleSelection() {
-        this.userID = 2;
         initComponents();
     }
-    public ScheduleSelection(int userID) {
-        this.userID = 2;//userID;
+    public ScheduleSelection(int userID, boolean editable) {
+        this.userID = userID;
+        this.editable = editable;
         initComponents();
+        setSchedule(userID);
     }
 
     /**
@@ -51,6 +53,7 @@ public class ScheduleSelection extends javax.swing.JFrame {
         jLabel3 = new javax.swing.JLabel();
         submitSchedule = new javax.swing.JButton();
         clearTimes = new javax.swing.JButton();
+        ExitButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -87,6 +90,10 @@ public class ScheduleSelection extends javax.swing.JFrame {
 
         jLabel3.setText("Please enter times in the form X:XX AM or X:XX PM");
 
+        if(!editable)
+        {
+            submitSchedule.setVisible(false);
+        }
         submitSchedule.setText("Submit");
         submitSchedule.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -94,10 +101,21 @@ public class ScheduleSelection extends javax.swing.JFrame {
             }
         });
 
+        if(!editable)
+        {
+            clearTimes.setVisible(false);
+        }
         clearTimes.setText("Clear Times");
         clearTimes.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 clearTimesActionPerformed(evt);
+            }
+        });
+
+        ExitButton.setText("Exit");
+        ExitButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                ExitButtonActionPerformed(evt);
             }
         });
 
@@ -126,7 +144,9 @@ public class ScheduleSelection extends javax.swing.JFrame {
                     .addGroup(submitSchedulePaneLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(submitSchedule)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 390, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(ExitButton, javax.swing.GroupLayout.PREFERRED_SIZE, 69, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(152, 152, 152)
                         .addComponent(clearTimes)))
                 .addContainerGap())
         );
@@ -146,7 +166,8 @@ public class ScheduleSelection extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(submitSchedulePaneLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(submitSchedule)
-                    .addComponent(clearTimes))
+                    .addComponent(clearTimes)
+                    .addComponent(ExitButton))
                 .addGap(7, 7, 7))
         );
 
@@ -164,6 +185,51 @@ public class ScheduleSelection extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void setSchedule(int userID)
+    {
+        String[] startTimes = new String[7];
+        String[] endTimes = new String[7];
+        String startDate = "";
+        String endDate = "";
+        int k = 0;
+        
+        DatabaseConnection db = new DatabaseConnection();
+        Connection conn = db.connectToDB();
+        String sql = "SELECT * FROM  `TASchedule` WHERE AssistantID = '" + userID + "' order by DayOfWeek asc";
+        ResultSet rs = db.getResults(conn, sql);
+        try {
+            while(rs.next())
+            {
+                startTimes[k] = rs.getString("StartTime");
+                endTimes[k] = rs.getString("EndTime");
+                
+                startDate = rs.getString("StartDate");
+                endDate = rs.getString("EndDate");
+                k++;
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(ScheduleSelection.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        scheduleSelectStartDate.setText(startDate);
+        scheduleSelectEndDate.setText(endDate);
+        
+        for(int j = 0; j < 1; j++)
+        {
+            for (int i =  1; i < 8; i++)
+            {
+                timeTable.setValueAt(startTimes[i-1], j, i);
+            }
+        }
+        for(int j = 1; j < 2; j++)
+        {
+            for (int i =  1; i < 8; i++)
+            {
+                timeTable.setValueAt(endTimes[i-1], j, i);
+            }
+        }
+        
+    }
     private void submitScheduleActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_submitScheduleActionPerformed
 
         int[] daysOfWeek = {0,1,2,3,4,5,6};
@@ -248,7 +314,8 @@ public class ScheduleSelection extends javax.swing.JFrame {
             for(int i=0; i<=6; i++)
             {
                 postSQL = "";
-                sql = "";
+                postSQL += "`StartDate` = '" + startDate + "', ";
+                postSQL += "`EndDate` = '" + endDate + "', ";
                 postSQL += "`StartTime` = '" + startTimes[i] + "', ";
                 postSQL += "`EndTime` = '" + endTimes[i] + "' ";
                 postSQL += "where `TASchedule`.`ID` = "+ sqlID;
@@ -270,7 +337,7 @@ public class ScheduleSelection extends javax.swing.JFrame {
                 dbConnect.updateDatabase(conn, sql);
             }
         }
-        
+        this.dispose();
     }//GEN-LAST:event_submitScheduleActionPerformed
 
     private void clearTimesActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearTimesActionPerformed
@@ -283,6 +350,10 @@ public class ScheduleSelection extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_clearTimesActionPerformed
+
+    private void ExitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExitButtonActionPerformed
+        this.dispose();
+    }//GEN-LAST:event_ExitButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -326,6 +397,7 @@ public class ScheduleSelection extends javax.swing.JFrame {
         });
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton ExitButton;
     private javax.swing.JButton clearTimes;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;

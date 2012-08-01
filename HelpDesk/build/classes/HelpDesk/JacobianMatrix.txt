@@ -1,3 +1,0 @@
-Could someone explain what the Jacobian matrix is, a few examples, and a few applications in layman's terms?
-
-Asking this question mainly because I'm too lazy to go on Wikipedia and work it out for myself.

@@ -453,7 +453,7 @@ private void loginSubmitButtonActionPerformed(java.awt.event.ActionEvent evt) {/
         }
         else
         {
-            loginForm.setVisible(false);
+            this.dispose();
             new LandingForm(permission, accountID).setVisible(true);
         }
 }//GEN-LAST:event_loginSubmitButtonActionPerformed

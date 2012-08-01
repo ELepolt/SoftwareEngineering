@@ -178,6 +178,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Schedule Control"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="viewScheduleButtonActionPerformed"/>
+      </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="if (userType == 3) {&#xa;&#xa;} else {&#xa;    viewScheduleButton.setVisible(false);&#xa;}"/>
       </AuxValues>

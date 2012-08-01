@@ -116,6 +116,11 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
             viewScheduleButton.setVisible(false);
         }
         viewScheduleButton.setText("Schedule Control");
+        viewScheduleButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                viewScheduleButtonActionPerformed(evt);
+            }
+        });
 
         if (userType == 3) {
 
@@ -281,7 +286,7 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
     }
     
     private void initHelp() {
-        String s = "Welcome.txt";
+        String s = "Welcome";
         
         try {
             bookData = readFile(s);
@@ -384,8 +389,8 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
                         String questionContent = questionRS.getString("Question");
                         int questionID = questionRS.getInt("QuestionID");
                         
-                        question = new DefaultMutableTreeNode(new BookInfo(questionTitle, questionContent, questionID, 0));
-                        subCategory.add(question); //Adds question Pythah to subCategory Math
+                        question = new DefaultMutableTreeNode(new BookInfo(questionTitle, questionContent, questionID, 1));
+                        subCategory.add(question); //Adds question Pythag to subCategory Math
                         
                         getAnswers(db, conn, question, questionID); //Gets answers for question
                     }
@@ -395,16 +400,6 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
         } catch (SQLException ex) {
             Logger.getLogger(HelpDeskMainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-        DefaultMutableTreeNode file = new DefaultMutableTreeNode(new BookInfo
-                                        ("This is a test",
-                                        "JacobianMatrix.txt",
-                                        0,0));
-        subCategory.add(file);
-        
-        DefaultMutableTreeNode test = new DefaultMutableTreeNode(new BookInfo
-                                        ("This is another test",
-                                        "JacobianMatrix.txt",0,0));
-        file.add(test);
     }
     
     
@@ -426,24 +421,37 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
         
         TreePath path = tree.getSelectionPath();
         DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-        BookInfo bookInfo = (BookInfo) node.getUserObject();
+        BookInfo bookInfo = null;
+        int bookType = 0;
         
-        int bookType = bookInfo.bookType;
+        //If user is trying to submit a question to a subcategory, bookInfo freaks out
+        try
+        {
+            bookInfo = (BookInfo) node.getUserObject();
+            bookType = bookInfo.bookType;
         
-        if(bookType == 0)
-        {
-            TreePath parent = path.getParentPath();
-            node = (DefaultMutableTreeNode) parent.getLastPathComponent();
-            subCat = (String) node.getUserObject();
-        }
-        else
-        {
             commentID = bookInfo.bookID;
         }
+        //Catch the freakout and get the largest questionID and use that as 'commentID'
+        catch(RuntimeException e){
+            DatabaseConnection db = new DatabaseConnection();
+            Connection conn = db.connectToDB();
+            String sql = "SELECT QuestionID FROM `ForumQuestions` order by QuestionID desc";
+            ResultSet rs = db.getResults(conn, sql);
+            try {
+                if (rs.next())
+                {
+                    commentID = rs.getInt("QuestionID");
+                }
+            } catch (SQLException ex) {
+                Logger.getLogger(LandingForm.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            subCat = (String) node.getUserObject();
+        }
         
-        
-        ReplyForm replyForm = new ReplyForm(bookType, userID, subCat, commentID);
+        ReplyForm replyForm = new ReplyForm(bookType, userID, subCat, commentID, userType);
         replyForm.setVisible(true);
+        this.dispose();
         
     }//GEN-LAST:event_ReplyButtonActionPerformed
 
@@ -454,9 +462,14 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
     private void accessScheduleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accessScheduleButtonActionPerformed
         // TODO add your handling code here:
         
-        ScheduleSelection scheduleSelection1 = new ScheduleSelection(userID);
+        ScheduleSelection scheduleSelection1 = new ScheduleSelection(userID, true);
         scheduleSelection1.setVisible(true);
     }//GEN-LAST:event_accessScheduleButtonActionPerformed
+
+    private void viewScheduleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewScheduleButtonActionPerformed
+        // TODO add your handling code here:
+        new SelectAssistant().setVisible(true);
+    }//GEN-LAST:event_viewScheduleButtonActionPerformed
     
     private void getAnswers(DatabaseConnection db, 
                             Connection conn, 
@@ -508,7 +521,7 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
                                                                         (rs.getString("Author"), 
                                                                          rs.getString("Comment"),
                                                                          commentID,
-                                                                         1));
+                                                                         2));
                 parentComment.add(childComment); //Adds question to category
                         
                 //Gets comments by recursion... hopefully. Damn straight it does.

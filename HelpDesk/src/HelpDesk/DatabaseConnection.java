@@ -23,18 +23,18 @@ public class DatabaseConnection {
             try {
                 Class.forName("com.mysql.jdbc.Driver").newInstance();
             } catch (InstantiationException ex) {
-                Logger.getLogger(SWE_LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(HelpDeskMainFrame.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IllegalAccessException ex) {
-                Logger.getLogger(SWE_LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(HelpDeskMainFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
         } catch (ClassNotFoundException ex) {
-            Logger.getLogger(SWE_LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HelpDeskMainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         
         try {
             conn = DriverManager.getConnection("jdbc:mysql://ucfilespace.uc.edu/lepolted","lepolted","password");
         } catch (SQLException ex) {
-            Logger.getLogger(SWE_LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HelpDeskMainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         return conn;
     }
@@ -43,13 +43,13 @@ public class DatabaseConnection {
         try {
             stmt = conn.createStatement();
         } catch (SQLException ex) {
-            Logger.getLogger(SWE_LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HelpDeskMainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         try {
             rs = stmt.executeQuery(sql);
         } catch (SQLException ex) {
-            Logger.getLogger(SWE_LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HelpDeskMainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         return rs;
     }
@@ -58,13 +58,13 @@ public class DatabaseConnection {
         try {
             stmt = conn.createStatement();
         } catch (SQLException ex) {
-            Logger.getLogger(SWE_LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HelpDeskMainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         try {
             stmt.executeUpdate(sql);
         } catch (SQLException ex) {
-            Logger.getLogger(SWE_LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HelpDeskMainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         return rs;
         
@@ -75,18 +75,18 @@ public class DatabaseConnection {
         try {
             rs.close();
         } catch (SQLException ex) {
-            Logger.getLogger(SWE_LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HelpDeskMainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
             stmt.close();
         } catch (SQLException ex) {
-            Logger.getLogger(SWE_LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HelpDeskMainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
         */
         try {
             conn.close();
         } catch (SQLException ex) {
-            Logger.getLogger(SWE_LoginForm.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(HelpDeskMainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
