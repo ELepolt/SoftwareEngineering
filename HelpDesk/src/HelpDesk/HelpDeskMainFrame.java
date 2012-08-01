@@ -392,8 +392,8 @@ private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRS
 
 private void loginSubmitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loginSubmitButtonActionPerformed
         // TODO add your handling code here:
-        String userName = "lepolted";//userNameText.getText();
-        String password = "password";//passwordText.getText();
+        String userName = userNameText.getText();
+        String password = passwordText.getText();
         Boolean accountAvailable = false;
         int accountID = 0;
         int permission = 0;

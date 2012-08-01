@@ -7,6 +7,8 @@ package HelpDesk;
 import java.sql.Connection;
 import java.util.Random;
 import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 /**
  *
@@ -26,7 +28,7 @@ public class ReplyForm extends javax.swing.JFrame {
         this.subCat = subCat;
         this.parentComment = parentComment;
         
-        
+        OriginalComment(parentComment);
         initComponents();
         
     }
@@ -45,7 +47,7 @@ public class ReplyForm extends javax.swing.JFrame {
     private void initComponents() {
 
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        ParentCommentTextArea = new javax.swing.JTextArea();
         ExitButton = new javax.swing.JButton();
         jScrollPane2 = new javax.swing.JScrollPane();
         jTextArea2 = new javax.swing.JTextArea();
@@ -53,9 +55,9 @@ public class ReplyForm extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
-        jTextArea1.setColumns(20);
-        jTextArea1.setRows(5);
-        jScrollPane1.setViewportView(jTextArea1);
+        ParentCommentTextArea.setColumns(20);
+        ParentCommentTextArea.setRows(5);
+        jScrollPane1.setViewportView(ParentCommentTextArea);
 
         ExitButton.setText("Cancel");
         ExitButton.addActionListener(new java.awt.event.ActionListener() {
@@ -188,28 +190,25 @@ public class ReplyForm extends javax.swing.JFrame {
         String sql = "Select * from ";
         if(bookType == 0)
         {
-            //This is someone submitting a question to a subCategory
-            sql += "";
-        }
-        else if(bookType == 1)
-        {
-            //This is someone Answering a question
-            
+            //This is someone replying to an answer to a question
+            sql += "`ForumQuestions` where QuestionID = '"+commentID+"'";
         }
         else
         {
             //This is someone commenting
-            
+            sql += "";
         }
+        
+        ParentCommentTextArea.setText("Test");
         
         return comment;
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ExitButton;
+    private javax.swing.JTextArea ParentCommentTextArea;
     private javax.swing.JButton SubmitButton;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextArea jTextArea2;
     // End of variables declaration//GEN-END:variables
 }

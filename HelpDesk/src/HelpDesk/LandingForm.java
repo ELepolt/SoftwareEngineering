@@ -28,6 +28,7 @@ import javax.swing.tree.TreeSelectionModel;
  */
 public class LandingForm extends javax.swing.JFrame implements TreeSelectionListener {
     private String bookData;
+    private URL helpURL;
     private static boolean DEBUG = false;
     static private int userType; //1 for student, 2 for gradassistant, 3 for gradcoordinator
     static private int userID; //ID used for passing visibility option in questions/comments
@@ -35,13 +36,13 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
      * Creates new form LandingForm
      */
     public LandingForm() {
-        this.userType = 2;//userType;
+        //this.userType = 2;//userType;
         initComponents();
     }
     
     public LandingForm(int userType, int userID) {
-        this.userType = 2;//userType;
-        this.userID = 2;//userID;
+        this.userType = userType;
+        this.userID = userID;
         initComponents();
     }
 
@@ -224,7 +225,7 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
+    
     public void valueChanged(TreeSelectionEvent e) {
         DefaultMutableTreeNode node = (DefaultMutableTreeNode)
                            tree.getLastSelectedPathComponent();
@@ -238,6 +239,12 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
             if (DEBUG) {
                 System.out.print(book.bookData + ":  \n    ");
             }
+        } else if (node.getUserObject() instanceof BookInfo == true) {
+            BookInfo book = (BookInfo) node.getUserObject();
+            if (book.bookURL != null)
+                displayURL(book.bookURL);
+            else 
+                displayData(book.bookData);
         } else {
             displayData(bookData); 
         }
@@ -249,6 +256,7 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
     private class BookInfo {
         public String bookName;
         public String bookData;
+        public URL bookURL;
         public int bookID;
         public int bookType;
 
@@ -257,6 +265,14 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
             bookData = data;
             bookID = ID;
             bookType = type;
+        }
+        
+        public BookInfo(String book, URL file) {
+            bookName = book;
+            bookURL = file;
+            if (bookURL == null) {
+                System.err.println("BookInfo Constructor 2: Couldn't find URL.");
+            }
         }
 
         public String toString() {
@@ -304,7 +320,7 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
             } else { //null url
 		htmlPane.setText("Info Not Found");
                 if (DEBUG) {
-                    System.out.println("Attempted to display a null URL.");
+                    System.out.println("Attempted to display a null String.");
                 }
             }
         
@@ -371,7 +387,7 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
                         question = new DefaultMutableTreeNode(new BookInfo(questionTitle, questionContent, questionID, 0));
                         subCategory.add(question); //Adds question Pythah to subCategory Math
                         
-                        //getAnswers(db, conn, question, questionID); //Gets answers for question
+                        getAnswers(db, conn, question, questionID); //Gets answers for question
                     }
                 
                 }
