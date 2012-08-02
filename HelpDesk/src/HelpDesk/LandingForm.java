@@ -62,9 +62,6 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
         tree = new javax.swing.JTree(top);
         ExitButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        ThreadIDTextField = new javax.swing.JTextField();
-        SearchButton = new javax.swing.JToggleButton();
         ReplyButton = new javax.swing.JButton();
         htmlView = new javax.swing.JScrollPane();
         htmlPane = new javax.swing.JEditorPane();
@@ -73,6 +70,7 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
         controlFormsButton = new javax.swing.JButton();
         accessScheduleButton = new javax.swing.JButton();
         accessFormsButton = new javax.swing.JButton();
+        PostButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -88,15 +86,6 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
         });
 
         jLabel1.setText("Find Thread by Thread ID:");
-
-        jLabel2.setText("Thread ID:");
-
-        SearchButton.setText("Search");
-        SearchButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                SearchButtonActionPerformed(evt);
-            }
-        });
 
         ReplyButton.setText("Reply");
         ReplyButton.addActionListener(new java.awt.event.ActionListener() {
@@ -140,6 +129,11 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
             controlFormsButton.setVisible(false);
         }
         controlFormsButton.setText("Forms");
+        controlFormsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                controlFormsButtonActionPerformed(evt);
+            }
+        });
 
         if (userType == 2) {
 
@@ -159,6 +153,18 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
             accessFormsButton.setVisible(false);
         }
         accessFormsButton.setText("My Forms");
+        accessFormsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                accessFormsButtonActionPerformed(evt);
+            }
+        });
+
+        PostButton.setText("Post");
+        PostButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                PostButtonActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -170,14 +176,9 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(PostButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(ReplyButton))
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(ThreadIDTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 138, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(SearchButton)
-                        .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(htmlView)
                     .addComponent(jScrollPane))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -201,18 +202,14 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 149, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(htmlView, javax.swing.GroupLayout.DEFAULT_SIZE, 327, Short.MAX_VALUE)
+                        .addComponent(htmlView, javax.swing.GroupLayout.DEFAULT_SIZE, 331, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addComponent(jLabel1)
-                                .addGap(18, 18, 18)
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                    .addComponent(jLabel2)
-                                    .addComponent(ThreadIDTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(SearchButton)))
-                            .addComponent(ReplyButton))
-                        .addGap(49, 49, 49))
+                            .addComponent(jLabel1)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(ReplyButton)
+                                .addComponent(PostButton)))
+                        .addGap(77, 77, 77))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(ExitButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -225,7 +222,7 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
                         .addComponent(setAssistantsButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(viewScheduleButton)
-                        .addContainerGap())))
+                        .addContainerGap(424, Short.MAX_VALUE))))
         );
 
         pack();
@@ -379,8 +376,10 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
                     subCategory = new DefaultMutableTreeNode(subRS.getString("Name"));
                     category.add(subCategory); //Adds subCategory "math" to Category "queries"
                     
+                    //Queries for all questions inside subcategory
                     subCategoryID = subRS.getInt("SubCategoryID");
-                    String questionSQL = "SELECT * FROM `ForumQuestions` WHERE SubCategoryID = '"+subCategoryID+"'"; 
+                    String questionSQL = "SELECT * FROM `ForumQuestions` "
+                            + "WHERE SubCategoryID = '"+subCategoryID+"'"; 
                     ResultSet questionRS = db.getResults(conn, questionSQL);
                     
                     while(questionRS.next())
@@ -402,18 +401,10 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
         }
     }
     
-    
     private void ExitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExitButtonActionPerformed
         // TODO add your handling code here:
         System.exit(0);
     }//GEN-LAST:event_ExitButtonActionPerformed
-
-    private void SearchButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SearchButtonActionPerformed
-        // TODO add your handling code here:
-        
-        JOptionPane.showMessageDialog(this, "Cannot find specified thread with ThreadID: '" + ThreadIDTextField.getText() + "'");
-        
-    }//GEN-LAST:event_SearchButtonActionPerformed
 
     private void ReplyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ReplyButtonActionPerformed
         String subCat = null;
@@ -460,16 +451,60 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
     }//GEN-LAST:event_setAssistantsButtonActionPerformed
 
     private void accessScheduleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accessScheduleButtonActionPerformed
-        // TODO add your handling code here:
-        
         ScheduleSelection scheduleSelection1 = new ScheduleSelection(userID, true);
         scheduleSelection1.setVisible(true);
     }//GEN-LAST:event_accessScheduleButtonActionPerformed
 
     private void viewScheduleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_viewScheduleButtonActionPerformed
-        // TODO add your handling code here:
         new SelectAssistant().setVisible(true);
     }//GEN-LAST:event_viewScheduleButtonActionPerformed
+
+private void accessFormsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_accessFormsButtonActionPerformed
+    new SubmitForms(userID).setVisible(true);
+}//GEN-LAST:event_accessFormsButtonActionPerformed
+
+private void PostButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PostButtonActionPerformed
+    String subCat = null;
+    int commentID = 0;
+
+    TreePath path = tree.getSelectionPath();
+    DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
+    BookInfo bookInfo = null;
+    int bookType = 0;
+
+    //If user is trying to submit a question to a subcategory, bookInfo freaks out
+    try
+    {
+        bookInfo = (BookInfo) node.getUserObject();
+        bookType = bookInfo.bookType;
+
+        commentID = bookInfo.bookID;
+    }
+    //Catch the freakout and get the largest questionID and use that as 'commentID'
+    catch(RuntimeException e){
+        DatabaseConnection db = new DatabaseConnection();
+        Connection conn = db.connectToDB();
+        String sql = "SELECT QuestionID FROM `ForumQuestions` order by QuestionID desc";
+        ResultSet rs = db.getResults(conn, sql);
+        try {
+            if (rs.next())
+            {
+                commentID = rs.getInt("QuestionID");
+            }
+        } catch (SQLException ex) {
+            Logger.getLogger(LandingForm.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        subCat = (String) node.getUserObject();
+    }
+
+    ReplyForm replyForm = new ReplyForm(bookType, userID, subCat, commentID, userType);
+    replyForm.setVisible(true);
+    this.dispose();
+}//GEN-LAST:event_PostButtonActionPerformed
+
+    private void controlFormsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_controlFormsButtonActionPerformed
+        new AllForms().setVisible(true);
+    }//GEN-LAST:event_controlFormsButtonActionPerformed
     
     private void getAnswers(DatabaseConnection db, 
                             Connection conn, 
@@ -485,11 +520,13 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
                 //rs.getString("Author") is the user's ID. Need to probably get the user name or something.
                 //Also, need to add in visibility.
                 int commentID = rs.getInt("CommentID");
+                int authorID = rs.getInt("Author");
+                String author = HelpFunctions.getAuthor(authorID);
                 DefaultMutableTreeNode answer = new DefaultMutableTreeNode(new BookInfo
-                                                                        (rs.getString("Author"), 
+                                                                        (author, 
                                                                          rs.getString("Comment"),
                                                                          commentID,
-                                                                         1));
+                                                                         2));
                 parentQuestion.add(answer); //Adds Answer to Question
                         
                 //Queries to see if there are comments to the answer
@@ -516,15 +553,16 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
             while (rs.next())
             {
                 int commentID = rs.getInt("CommentID");
-                //rs.getString("Author") is the user's ID.
+                int authorID = rs.getInt("Author");
+                String author = HelpFunctions.getAuthor(authorID);
                 DefaultMutableTreeNode childComment = new DefaultMutableTreeNode(new BookInfo
-                                                                        (rs.getString("Author"), 
+                                                                        (author, 
                                                                          rs.getString("Comment"),
                                                                          commentID,
                                                                          2));
                 parentComment.add(childComment); //Adds question to category
                         
-                //Gets comments by recursion... hopefully. Damn straight it does.
+                //Gets comments by recursion... hopefully. Update:Damn straight it does.
                 getComments(db, conn, childComment, commentID);
             }
         } catch (SQLException ex) {
@@ -575,16 +613,14 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton ExitButton;
+    private javax.swing.JButton PostButton;
     private javax.swing.JButton ReplyButton;
-    private javax.swing.JToggleButton SearchButton;
-    private javax.swing.JTextField ThreadIDTextField;
     private javax.swing.JButton accessFormsButton;
     private javax.swing.JButton accessScheduleButton;
     private javax.swing.JButton controlFormsButton;
     private javax.swing.JEditorPane htmlPane;
     private javax.swing.JScrollPane htmlView;
     private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JButton setAssistantsButton;
     private javax.swing.JTree tree;

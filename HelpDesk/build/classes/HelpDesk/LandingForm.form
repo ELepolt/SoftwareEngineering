@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 
-<Form version="1.5" maxVersion="1.8" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
+<Form version="1.5" maxVersion="1.7" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="3"/>
   </Properties>
@@ -28,15 +28,9 @@
                   <Group type="102" attributes="0">
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="32767" attributes="0"/>
+                      <Component id="PostButton" min="-2" max="-2" attributes="0"/>
+                      <EmptySpace type="unrelated" max="-2" attributes="0"/>
                       <Component id="ReplyButton" min="-2" max="-2" attributes="0"/>
-                  </Group>
-                  <Group type="102" attributes="0">
-                      <Component id="jLabel2" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="ThreadIDTextField" min="-2" pref="138" max="-2" attributes="0"/>
-                      <EmptySpace max="-2" attributes="0"/>
-                      <Component id="SearchButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                   </Group>
                   <Component id="htmlView" alignment="0" max="32767" attributes="0"/>
                   <Component id="jScrollPane" alignment="0" max="32767" attributes="0"/>
@@ -67,21 +61,16 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jScrollPane" min="-2" pref="149" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Component id="htmlView" pref="327" max="32767" attributes="0"/>
+                      <Component id="htmlView" pref="331" max="32767" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
-                          <Group type="102" attributes="0">
-                              <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace type="separate" max="-2" attributes="0"/>
-                              <Group type="103" groupAlignment="3" attributes="0">
-                                  <Component id="jLabel2" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="ThreadIDTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                                  <Component id="SearchButton" alignment="3" min="-2" max="-2" attributes="0"/>
-                              </Group>
+                          <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
+                          <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                              <Component id="ReplyButton" alignment="3" min="-2" max="-2" attributes="0"/>
+                              <Component id="PostButton" alignment="3" min="-2" max="-2" attributes="0"/>
                           </Group>
-                          <Component id="ReplyButton" min="-2" max="-2" attributes="0"/>
                       </Group>
-                      <EmptySpace min="-2" pref="49" max="-2" attributes="0"/>
+                      <EmptySpace min="-2" pref="77" max="-2" attributes="0"/>
                   </Group>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="ExitButton" min="-2" max="-2" attributes="0"/>
@@ -95,7 +84,7 @@
                       <Component id="setAssistantsButton" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="viewScheduleButton" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace max="32767" attributes="0"/>
+                      <EmptySpace pref="424" max="32767" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -131,21 +120,6 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Find Thread by Thread ID:"/>
       </Properties>
-    </Component>
-    <Component class="javax.swing.JLabel" name="jLabel2">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Thread ID:"/>
-      </Properties>
-    </Component>
-    <Component class="javax.swing.JTextField" name="ThreadIDTextField">
-    </Component>
-    <Component class="javax.swing.JToggleButton" name="SearchButton">
-      <Properties>
-        <Property name="text" type="java.lang.String" value="Search"/>
-      </Properties>
-      <Events>
-        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="SearchButtonActionPerformed"/>
-      </Events>
     </Component>
     <Component class="javax.swing.JButton" name="ReplyButton">
       <Properties>
@@ -200,6 +174,9 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="Forms"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="controlFormsButtonActionPerformed"/>
+      </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="if (userType == 2) {&#xa;&#xa;} else {&#xa;    controlFormsButton.setVisible(false);&#xa;}"/>
       </AuxValues>
@@ -219,9 +196,20 @@
       <Properties>
         <Property name="text" type="java.lang.String" value="My Forms"/>
       </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="accessFormsButtonActionPerformed"/>
+      </Events>
       <AuxValues>
         <AuxValue name="JavaCodeGenerator_InitCodePre" type="java.lang.String" value="if (userType == 1) {&#xa;&#xa;} else {&#xa;    accessFormsButton.setVisible(false);&#xa;}"/>
       </AuxValues>
+    </Component>
+    <Component class="javax.swing.JButton" name="PostButton">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Post"/>
+      </Properties>
+      <Events>
+        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="PostButtonActionPerformed"/>
+      </Events>
     </Component>
   </SubComponents>
 </Form>

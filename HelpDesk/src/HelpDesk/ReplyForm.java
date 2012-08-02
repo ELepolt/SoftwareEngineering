@@ -149,6 +149,7 @@ public class ReplyForm extends javax.swing.JFrame {
     private void ExitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ExitButtonActionPerformed
         // TODO add your handling code here:
         this.setVisible(false);
+        new LandingForm(userType, userID).setVisible(true);
     }//GEN-LAST:event_ExitButtonActionPerformed
 
     private void SubmitButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SubmitButtonActionPerformed
@@ -170,7 +171,7 @@ public class ReplyForm extends javax.swing.JFrame {
                     +"'"+ QuestionTitleTextField.getText() +"', "
                     +"'"+ contentTextArea.getText() +"', "
                     +"NULL ,"
-                    +"'"+ Constants.subCat(subCat) + "'"
+                    +"'"+ HelpFunctions.subCat(subCat) + "'"
                     +")";
             
         }

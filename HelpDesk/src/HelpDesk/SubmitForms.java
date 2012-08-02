@@ -4,6 +4,17 @@
  */
 package HelpDesk;
 
+import java.awt.Component;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.sql.Blob;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
@@ -11,11 +22,16 @@ import javax.swing.filechooser.FileNameExtensionFilter;
  * @author scheetaa
  */
 public class SubmitForms extends javax.swing.JFrame {
-
+    private int userID;
+    private Component frame;
     /**
      * Creates new form SubmitForms
      */
     public SubmitForms() {
+        initComponents();
+    }
+    public SubmitForms(int userID) {
+        this.userID = userID;
         initComponents();
     }
 
@@ -60,14 +76,39 @@ public class SubmitForms extends javax.swing.JFrame {
 
        if("CancelSelection".equals(evt.getActionCommand()))
        {
-            System.exit(0);
+            this.dispose();
        }
        else if("ApproveSelection".equals(evt.getActionCommand()))
        {
+           
+           DatabaseConnection db = new DatabaseConnection();
+           Connection conn = db.connectToDB();
+
            //This is currently displaying the path of the selected file
            //This is where the saving of the file to the database would go
            //TODO save pdf file located at jFileChooser1.getSelectedFile().toString() to DB:
-           System.out.println("Open " + jFileChooser1.getSelectedFile().toString());
+           File file = jFileChooser1.getSelectedFile();
+           FileInputStream fileInput = null;
+           try {
+               fileInput = new FileInputStream(file);
+           } catch (FileNotFoundException ex) {
+               Logger.getLogger(SubmitForms.class.getName()).log(Level.SEVERE, null, ex);
+           }
+           
+           String sql = "Insert into `HDForms` (UserID, Title, Content, ID) Values(?,?,?,NULL)";
+           PreparedStatement prepState = null;
+           try {
+               prepState = conn.prepareStatement(sql);
+               prepState.setInt(1, userID);
+               prepState.setString(2, jFileChooser1.getSelectedFile().getName().toString());
+               prepState.setBlob(3, fileInput);
+               prepState.execute();
+           } catch (SQLException ex) {
+               Logger.getLogger(SubmitForms.class.getName()).log(Level.SEVERE, null, ex);
+           }
+           JOptionPane.showMessageDialog(frame,
+                    "File upload successful.");
+           this.dispose();
        }          
        
         
