@@ -158,6 +158,7 @@ public class ReplyForm extends javax.swing.JFrame {
         Connection conn = db.connectToDB();
         String sql = "";
         
+        int visibility = VisibleToPublicCheckbox.isSelected() ? 0 : 1;
         if(bookType == 0)
         {
             //This is someone submitting a question to a subCategory
@@ -165,13 +166,17 @@ public class ReplyForm extends javax.swing.JFrame {
                     +"`QuestionTitle` ,"
                     +"`Question` ,"
                     +"`QuestionID` ,"
-                    +"`SubCategoryID`"
+                    +"`SubCategoryID` ,"
+                    +"`Visibility` ,"
+                    +"`Author`"
                     +")"
                     +"VALUES ("
                     +"'"+ QuestionTitleTextField.getText() +"', "
                     +"'"+ contentTextArea.getText() +"', "
                     +"NULL ,"
-                    +"'"+ HelpFunctions.subCat(subCat) + "'"
+                    +"'"+ HelpFunctions.subCat(subCat) + "' ,"
+                    +"'"+ visibility +"' ,"
+                    +"'"+ userID +"'"
                     +")";
             
         }
@@ -183,14 +188,16 @@ public class ReplyForm extends javax.swing.JFrame {
                     +"`CommentID` ,"
                     +"`ReplyID` ,"
                     +"`Comment` ,"
-                    +"`Author`"
+                    +"`Author` ,"
+                    +"`Visibility`"
                     +")"
                     +"VALUES ("
                     +"'"+ parentComment +"', "
                     +"NULL, "
                     +"NULL ,"
                     +"'"+ contentTextArea.getText() + "', "
-                    +"'"+ userID + "'"
+                    +"'"+ userID + "', "
+                    +"'"+ visibility + "'"
                     +")";
         }
         else
@@ -201,14 +208,16 @@ public class ReplyForm extends javax.swing.JFrame {
                     +"`CommentID` ,"
                     +"`ReplyID` ,"
                     +"`Comment` ,"
-                    +"`Author`"
+                    +"`Author` ,"
+                    +"`Visibility`"
                     +")"
                     +"VALUES ("
                     +"NULL, "
                     +"NULL, "
                     +"'"+ parentComment + "', "
                     +"'"+ contentTextArea.getText() + "', "
-                    +"'"+ userID + "'"
+                    +"'"+ userID + "',"
+                    +"'"+ visibility + "'"
                     +")";
         }
         

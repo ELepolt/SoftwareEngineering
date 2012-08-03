@@ -26,15 +26,15 @@ public class HelpFunctions {
     static int subCat(String sc)
     {
         int i = 1;
-        if(sc == "Science")
+        if("Science".equals(sc))
         {
             i = 2;
         }
-        if(sc == "English")
+        if("English".equals(sc))
         {
             i = 3;
         }
-        if(sc == "History")
+        if("History".equals(sc))
         {
             i = 4;
         }

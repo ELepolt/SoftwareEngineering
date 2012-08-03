@@ -61,7 +61,6 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
         createNodes(top);
         tree = new javax.swing.JTree(top);
         ExitButton = new javax.swing.JButton();
-        jLabel1 = new javax.swing.JLabel();
         ReplyButton = new javax.swing.JButton();
         htmlView = new javax.swing.JScrollPane();
         htmlPane = new javax.swing.JEditorPane();
@@ -84,8 +83,6 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
                 ExitButtonActionPerformed(evt);
             }
         });
-
-        jLabel1.setText("Find Thread by Thread ID:");
 
         ReplyButton.setText("Reply");
         ReplyButton.addActionListener(new java.awt.event.ActionListener() {
@@ -174,8 +171,7 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addGap(0, 0, Short.MAX_VALUE)
                         .addComponent(PostButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(ReplyButton))
@@ -204,11 +200,9 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(htmlView, javax.swing.GroupLayout.DEFAULT_SIZE, 331, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel1)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(ReplyButton)
-                                .addComponent(PostButton)))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(ReplyButton)
+                            .addComponent(PostButton))
                         .addGap(77, 77, 77))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(ExitButton)
@@ -357,6 +351,7 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
         // Query for total Forum topics
         // Gets all topics in the forums.
         String sql = "SELECT * FROM `ForumCategories`";
+        
         ResultSet rs = db.getResults(conn, sql);
         int categoryID = 0;
         int subCategoryID = 0;
@@ -379,7 +374,11 @@ public class LandingForm extends javax.swing.JFrame implements TreeSelectionList
                     //Queries for all questions inside subcategory
                     subCategoryID = subRS.getInt("SubCategoryID");
                     String questionSQL = "SELECT * FROM `ForumQuestions` "
-                            + "WHERE SubCategoryID = '"+subCategoryID+"'"; 
+                            + "WHERE SubCategoryID = '"+subCategoryID+"'";
+                    if (userType == 1)
+                    {
+                        questionSQL += " and (Visibility = 0 or Author='"+ userID + "')";
+                    }
                     ResultSet questionRS = db.getResults(conn, questionSQL);
                     
                     while(questionRS.next())
@@ -512,7 +511,11 @@ private void PostButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
                             int questionID)
     {
         //Queries the comments for matching questionID
-        String sql = "SELECT * FROM `ForumComments` WHERE QuestionID = '"+questionID+"'"; 
+        String sql = "SELECT * FROM `ForumComments` WHERE QuestionID = '"+questionID+"'";
+        if (userType == 1)
+        {
+            sql += " and (Visibility = 0 or Author='"+ userID + "')";
+        }
         ResultSet rs = db.getResults(conn, sql);
         try {
             while (rs.next())
@@ -548,6 +551,10 @@ private void PostButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     {
         //Queries for matching ReplyID
         String sql = "SELECT * FROM `ForumComments` WHERE ReplyID = '"+parentCommentID+"'"; 
+        if (userType == 1)
+        {
+            sql += " and (Visibility = 0 or Author='"+ userID + "')";
+        }
         ResultSet rs = db.getResults(conn, sql);
         try {
             while (rs.next())
@@ -620,7 +627,6 @@ private void PostButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FI
     private javax.swing.JButton controlFormsButton;
     private javax.swing.JEditorPane htmlPane;
     private javax.swing.JScrollPane htmlView;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane;
     private javax.swing.JButton setAssistantsButton;
     private javax.swing.JTree tree;
